@@ -1,0 +1,376 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>SamProject - Project Entry</title>
+ 
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/custom-theme/jquery-ui-1.8.6.custom.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/jquery.searchFilter.css" />
+ 
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 75%;
+}
+</style>
+<script src="js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/ui.datepicker.js" type="text/javascript"></script> 
+
+<script src="js/i18n/grid.locale-en.js" type="text/javascript"></script>
+<script src="js/jquery.jqGrid.js" type="text/javascript"></script>
+<script src="js/jquery.json-2.2.min.js" type="text/javascript"></script>  
+<script type="text/javascript">
+
+var currentiRow;
+var currentiCol;
+var newRowCount = 1;
+
+var str='';
+var lastsel;
+$(function(){ 
+
+	  jQuery("#grid").jqGrid({
+			url:"project_process_get.php",
+			datatype: "json",
+
+			colNames:
+				['Id','<img src="images/filtering.png"/>&nbsp;HighLevelIdea#', '<img src="images/filtering.png"/>&nbsp;Name', '<img src="images/filtering.png"/>&nbsp;Status', '<img src="images/filtering.png"/>&nbsp;Priority', '<img src="images/filtering.png"/>&nbsp;ProjectNo','<img src="images/filtering.png"/>&nbsp;ApprovalStatus','<img src="images/filtering.png"/>&nbsp;SubProjectNo','<img src="images/filtering.png"/>&nbsp;BA','<img src="images/filtering.png"/>&nbsp;PjM','<img src="images/filtering.png"/>&nbsp;DevLead',                '<img src="images/filtering.png"/>&nbsp;projectphaseid','<img src="images/filtering.png"/>&nbsp;Project Phase','<img src="images/filtering.png"/>&nbsp;Project Start Date','<img src="images/filtering.png"/>&nbsp;Project Target Delivery Date','<img src="images/filtering.png"/>&nbsp;Project Estimate','<img src="images/filtering.png"/>&nbsp;Estimate Type','<img src="images/filtering.png"/>&nbsp;Teams Impacted','<img src="images/filtering.png"/>&nbsp;Hours Consumed','<img src="images/filtering.png"/>&nbsp;Hours Remaining','rowidcol'],
+
+			colModel:[
+		
+				{name:'id',index:'id'},
+				{name:'highlevelideano',index:'highlevelideano', width:55,editable:true,sorttype:'int'},
+				{name:'name',index:'name',width:100,editable:true,sorttype:'text'},
+				{name:'status', index:'status',width:30,editable:true,edittype:"select",editoptions:{value:"1:Completed;2:OnHold;3:Deffered;4:InProgress"}},
+				{name:'priority', index:'priority',width:15,editable:true,edittype:"select",editoptions:{value:"1:1;2:2;3:3;4:4"}},				
+				{name:'projectno',index:'projectno', width:50, align:"right",editable:true,sorttype:'int'},
+				{name:'approvalstatus',index:'approvalstatus', width:55, align:"right",editable:true,edittype:"checkbox",editoptions:{value:"Approved:Unapproved"},formatoptions: {disabled : false}},		
+				{name:'subprojectno',index:'subprojectno', width:50,align:"right",editable:true,sorttype:'int'},	
+				{name:'ba',index:'ba', width:50,align:"right",editable:true},	
+				{name:'pjm',index:'pjm', width:50,align:"right",editable:true},	
+				{name:'devlead',index:'devlead', width:50,align:"right",editable:true},
+				{name:'projectphaseid',index:'projectphaseid',width:100},
+				{name:'phasename', index:'phasename',width:100,align:'right',editable:true,edittype:"select",editoptions:{value:"1:Inception;2:Requirements;3:Analysis;4:Design;5:Coding;6:QA;7:UserTesting;8:Implementation;9:PostImplementation"}},
+				{name:'projectstartdate',index:'projectstartdate', width:90,editable:true,editoptions:{readonly:false,size:15},sorttype:'date',datefmt:'Y-m-d'},	
+				{name:'deliverydate',index:'deliverydate', width:90,editable:true,editoptions:{readonly:false,size:15},sorttype:'date',datefmt:'Y-m-d'},
+				{name:'projectestimate',index:'projectestimate', width:90,editable:true},	
+				{name:'estimatetype',index:'estimatetype', width:90,editable:true,edittype:"select",editoptions:{value:"1:HighLevel;2:PreAnalysis;3:PostAnalysis"}},
+				{name:'team' ,index:'team',width:50,editable:true},
+
+				{name:'hoursconsumed',index:'hoursconsumed',width:55,editable:true,sorttype:'int'},
+				{name:'hoursremaining',index:'hoursremianing',width:55,editable:true,sorttype:'int'},
+				{name:'rowidcol',index:'rowidcol',width:0,editable:false}
+			],
+			
+				editurl:"project_process_set.php?q=1",//used in del
+				
+				height:600,
+				
+				width:1500,
+				
+				sortname: 'name',
+				
+				sortorder: "asc",
+				
+				caption:"Project In Progress ",
+				
+				//forceFit : true,
+				
+				cellEdit: true,
+				
+				cellsubmit: 'clientArray',
+				//
+				altRows:true,
+				
+				loadonce: true, // to enable sorting on client side
+				
+				sortable: true ,//to enable sorting
+				
+				pager: jQuery('#pager'),
+				
+				pgbuttons: false,
+				
+				pgtext:"",
+				
+				viewrecords: true,
+			
+				pginput: true,
+				
+				//
+				rowNum:10000,//show all ,-1 decrements, so use more than max
+				
+				//rowList:null,//rowList:[10,20,30]
+				
+				onSelectRow:function(){
+			
+				},
+			
+			afterEditCell: function (id,name,val,iRow,iCol){
+				currentiRow = iRow;
+				currentiCol = iCol;
+				//////alert("aftereditcell was called");
+				if ((name == "deliverydate") || (name == "projectstartdate")) {
+					var dateid = "#"+iRow+"_"+name;
+					jQuery(dateid,"#grid").datepicker({dateFormat:"yy-mm-dd"});
+				}
+			},
+			
+			/*cellurl:"project_process_set.php?q=1",*/
+			/*beforeSubmitCell : function(rowid,celname,value,iRow,iCol) { //we need to append $sidx etc frm insert to selction page
+			//alert("rowid: "+rowid);
+			//////alert("beforesubmitcell was clicked");
+
+				if(name == 'highlevelideano')
+				 { 
+				 ////////alert('before');
+					return {
+								hl:jQuery("#grid").getCell(rowid,iCol+1)
+
+						   } 
+				} 
+				else 
+				{ 
+					return {}
+				} 
+
+			} ,
+			*/
+				
+		/*	beforeSaveCell:function(rowid,name,val,iRow,iCol)
+			 {
+				if(name == 'highlevelideano')
+				 {			
+					$("#grid").appendPostData(hl:jQuery("#grid").getCell(rowid,iCol+1));
+				 }
+				 if(name == 'name') 
+				 {
+					jQuery("#grid").setPostData(nm:jQuery("#grid").getCell(rowid,iCol+1));
+				 }
+				if(name == 'projectno') 
+				{
+					jQuery("#grid").setPostData(prno:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'approvalstatus') 
+				{
+				
+				jQuery("#grid").setPostData(appr:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'team') 
+				{
+					jQuery("#grid").setPostData(tm:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+					
+				if(name == 'pjm') 
+				{
+				jQuery("#grid").setPostData(pjm:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'devlead') 
+				{
+					jQuery("#grid").setPostData(dev:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+						
+				if(name == 'phasename') 
+				{
+					jQuery("#grid").setPostData(phnm:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'projectstartdate') 
+				{
+					jQuery("#grid").setPostData(sdate:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'deliverydate') 
+				{
+					jQuery("#grid").setPostData(dl:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'projectestimate') 
+				{
+					jQuery("#grid").setPostData(pest:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+				if(name == 'estimatetype') 
+				{
+					jQuery("#grid").setPostData(estp:jQuery("#grid").getCell(rowid,iCol+1));
+				}
+											
+			},*/
+			/*
+			afterSaveCell : function(rowid,name,val,iRow,iCol) {
+			//alert("aftersavecell method called");
+
+				if(name == 'highlevelideano') {
+					var hlval = jQuery("#grid").getCell(rowid,iCol+1);
+
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(hlval)});
+					
+				}
+				if(name == 'name') {
+					var nameval = jQuery("#grid").getCell(rowid,iCol+1);
+				
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(nameval)});
+					
+				}
+				if(name == 'projectno') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+
+				}
+				if(name == 'approvalstatus') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+			
+				if(name == 'pjm') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'devlead') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+					if(name == 'phasename') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+					if(name == 'projectstartdate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'deliverydate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'projectestimate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'estimatetype') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'team') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'hoursconsumed') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+				if(name == 'hoursremaining') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(amtval)});
+					
+				}
+			}
+			*/
+			
+			
+		})
+		.navGrid(
+					'#pager',
+					{edit:true,add:true,del:true},
+					{id:'myedit'}
+					)
+		.hideCol("id")
+		.hideCol("projectphaseid")
+		.hideCol("rowidcol");
+		
+		$('#myedit').hide();
+		$(".ui-icon-disk").show().hover(function(){a(this).addClass("ui-state-hover")},function(){a(this).removeClass("ui-state-hover")});;
+	
+
+		$(".ui-pg-button div:first").removeClass("ui-pg-button").addClass("myclass");
+		
+
+		$(function(){ 
+			$('<td class="ui-pg-button ui-corner-all" title="Save new row(s)" id="save_grid"><div class="ui-pg-div saverecord"><span class="ui-icon ui-icon-disk"><a href="javascript:void(0)"></a></span></div></td>').hover(function(){$(this).addClass("ui-state-hover");},function(){$(this).removeClass("ui-state-hover")}).insertAfter("#add_grid");
+		});
+	
+
+
+
+		$(".saverecord").click(function(){
+		
+			$("#grid").saveCell(currentiRow, currentiCol);
+		
+		
+				var l=$("#grid").getChangedCells();
+			
+				var encoded=$.toJSON(l);
+				
+					$.ajax({
+							type: 'POST',
+							url: 'project_process_set.php?q=2',
+
+							data:{o:encoded},
+							success: function(data) {
+							
+						    $("#grid").trigger("reloadGrid");
+								}
+								
+								
+							});///endajax*/
+					//	}//end if
+				//	}//end for loops*/
+		});//end save
+
+
+
+
+			$(".myclass").click(function(){
+					newRowCount++;
+					
+					var data={
+								id:"newrow_"+newRowCount,
+								highlevelideano:"",
+								name:"Enter name here",
+								projectno:"",
+								approvalstatus:"",
+								subprojectno:"",
+								ba:"",
+								pjm:"",
+								devlead:"",
+								projectphaseid:"",
+								phasename:"",
+								projectstartdate:"",
+								deliverydate:"",
+								projectestimate:"",
+								estimatetype:"",
+								team:"",
+								hoursconsumed:"",
+								hoursremaining:"",
+								rowidcol:""
+							 };
+					
+					
+					
+					$("#grid").addRowData('newrow_'+newRowCount,data,'last');
+			
+		});
+			
+		
+				}); //jquery ready method
+	  
+
+</script>
+ 
+</head>
+<body>
+
+<table id="grid" class=""></table> 
+
+<div id="pager"></div> 
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>My First Grid</title>
+ 
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/custom-theme/jquery-ui-1.8.6.custom.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" media="screen" href="js/src/css/jquery.searchFilter.css" />
+ 
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    font-size: 75%;
+}
+</style>
+ 
+<script src="js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="js/src/grid.loader.js" type="text/javascript"></script>
+
+<script src="js/ui.datepicker.js" type="text/javascript"></script> 
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+  
+ <script type="text/javascript">
+
+function pickdates(id){ jQuery("#"+id+"_deliverydate","#grid").datepicker({dateFormat:"yy-mm-dd"}); } 
+
+var str='';
+var lastsel;
+$(function(){ 
+
+	  jQuery("#grid").jqGrid({
+			url:"test.php",
+			datatype: "json",
+
+			colNames:
+				['Id','HighLevelIdea#', 'Name', 'ProjectNo','ApprovalStatus','SubProjectNo','BA','PjM','DevLead',                'Project Phase','Project Start Date','Project Target Delivery Date','Project Estimate','Estimate Type'],
+
+			colModel:[
+		
+				{name:'id',index:'id'},
+				{name:'highlevelideano',index:'highlevelideano', width:55,editable:true},
+		
+				{name:'name',index:'name asc, deliverydate',width:100,editable:true},
+				{name:'projectno',index:'projectno', width:50, align:"right",editable:true},
+				{name:'approvalstatus',index:'approvalstatus', width:55, align:"right",editable:true,edittype:"select",editoptions:{value:"A:Approved;U:Unapproved"}},		
+				{name:'subprojectno',index:'subprojectno', width:50,align:"right",editable:true},	
+						{name:'ab',index:'ab', width:50,align:"right",editable:true},	
+					{name:'pjm',index:'pjm', width:50,align:"right",editable:true},	
+					{name:'devlead',index:'devlead', width:50,align:"right",editable:true},
+					{name:'phasename', index:'phasename',width:100,align:'right',editable:true,edittype:"select",editoptions:{value:"1:Inception;2:Requirements;3:Analysis;4:Design;5:Coding;6:QA;7:UserTesting;8:Implementation;9:PostImplementation"}},
+				{name:'projectstartdate',index:'projectstartdate', width:90,editable:true,editoptions:{readonly:false,size:15}},	
+				 {name:'deliverydate',index:'deliverydate', width:90,editable:true,editoptions:{readonly:false,size:15}},
+				 {name:'projectestimate',index:'projectestimate', width:90,editable:true},	
+				 {name:'estimatetype',index:'estimatetype', width:90,editable:true,edittype:"select",editoptions:{value:"1:HighLevel;2:PreAnalysis;3:PostAnalysis"}}
+				
+			],
+			
+			editurl:"test2.php?ba=1",
+			
+			rowNum:10,
+			
+			rowList:[10,20,30],
+			
+			height:500,
+			
+			width:1200,
+			
+			pager: jQuery('#pager'),
+			
+			sortname: 'highlevelideano',
+			
+			viewrecords: true,
+			
+			sortorder: "desc",
+			
+			caption:"Project In Progress ",
+			
+			forceFit : true,
+			
+			cellEdit: true,
+			
+			cellsubmit: 'remote',
+			//
+			altRows:true,
+			
+			loadonce: true, // to enable sorting on client side
+			
+			sortable: true ,//to enable sorting
+			
+			pgbuttons: true,
+			
+			pginput: true,
+			//
+			
+				onSelectRow:function(){
+			
+				alert('onselectrow');
+			
+				},
+			
+			afterEditCell: function (id,name,val,iRow,iCol){
+			
+				if(name=='projectstartdate') {
+					jQuery("#"+iRow+"_projectstartdate","#grid").datepicker({dateFormat:"yy-mm-dd"});
+				
+				}
+		
+				if(name=='deliverydate') {
+					
+					
+					jQuery("'#"+iRow+"_deliverydate'","#grid").datepicker({dateFormat:"yy-mm-dd"});
+				
+				}
+			},
+			cellurl:"test2.php",
+			
+			afterSaveCell : function(rowid,name,val,iRow,iCol) {
+				if(name == 'highlevelideano') {
+					var hlval = jQuery("#grid").getCell(rowid,iCol+1);
+					str='?hl='+taxval;
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(taxval)});
+				}
+				if(name == 'name') {
+					var nameval = jQuery("#grid").getCell(rowid,iCol+1);
+					str='?nameval='+taxval;
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(taxval)});
+				}
+				if(name == 'projectno') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'approvalstatus') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'team') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'pjm') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'devlead') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+					if(name == 'phasename') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+					if(name == 'projectstartdate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'deliverydate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'projectestimate') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+				if(name == 'estimatetype') {
+					var amtval = jQuery("#grid").getCell(rowid,iCol-1);
+					jQuery("#grid").setRowData(rowid,{total:parseFloat(val)+parseFloat(amtval)});
+				}
+			},
+			
+			edit : {
+						 addCaption: "Add Record",
+						 editCaption: "Edit Record",
+						 bSubmit: "Submit",
+						 bCancel: "Cancel",
+						 bClose: "Close",
+						 saveData: "Data has been changed! Save changes?",
+						 bYes : "Yes",
+						 bNo : "No",
+						 bExit : "Cancel",
+		  			}
+		  
+			
+		}).navGrid('#pager',{edit:true,add:true,del:true},{id:'myedit'}).hideCol("id");
+		
+		 			 $('#myedit').hide();
+
+		  
+			jQuery("#grid").jqGrid('setPostData',
+			{ 
+			  url:"test2.php",
+			  postData:{
+						  id:'14',
+						  name:'',
+						  highlevelideano:'',
+						  projectno:'',
+						  approvalstatus:'',
+						  subprojectno:'',
+						  ab:'',
+						  pjm:'',
+						  devlead:'',
+						  phasename:'',
+						  projectstartdate:'',
+						  deliverydate:'',
+						  projectestimate:'',
+						  estimatetype:''
+						  
+			  } 
+			  
+  });//.trigger("reloadGrid");
+}); //jquery ready method
+</script>
+ 
+</head>
+<body>
+
+<table id="grid" class=""></table> 
+
+<div id="pager"></div> 
+ <input type="BUTTON" id="bedata" value="Edit Selected" />
+</body>
+</html>
