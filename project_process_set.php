@@ -40,11 +40,9 @@ if($_POST['o'])
 					
 								$query=$query.$colname." where `id`=".$d->id;
 								
-								//$db = mysql_connect("localhost", "root", "") or die("Connection Error: " . mysql_error()); 
-								$db = mysql_connect("sql212.hostfree.pw", "epree_27217354", "recall123") or die("Connection Error: " . mysql_error()); 
-								
-								//mysql_select_db("samproject") or die("Error conecting to db.");
-								mysql_select_db("epree_27217354_openproblems") or die("Error conecting to db.");
+								$db = mysql_connect("localhost", "root", "") or die("Connection Error: " . mysql_error()); 
+											
+								mysql_select_db("samproject") or die("Error conecting to db.");
 											
 								if(mysql_query($query))
 								{

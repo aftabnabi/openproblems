@@ -1,7 +1,7 @@
 <?php
-	$dbhost = "sql212.hostfree.pw";
-	$dbuser = "epree_27217354";
-	$dbpassword = "recall123";
-	$database = "epree_27217354_openproblems";
+	$dbhost = "localhost";
+	$dbuser = "root";
+	$dbpassword = "";
+	$database = "samproject";
 	$table_prefix = "pj_";
 ?>
